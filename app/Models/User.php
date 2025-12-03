@@ -6,10 +6,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany; // [Wajib] Import untuk relasi wishlist
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
     /**
@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role', // [Penting] Tambahkan ini agar kolom role bisa diisi
     ];
 
     /**
@@ -44,5 +45,15 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Relasi Wishlist (User menyukai banyak Mobil)
+     * Definisikan relasi Many-to-Many ke model Car
+     */
+    public function wishlist(): BelongsToMany
+    {
+        // Parameter: (Model Tujuan, Nama Tabel Pivot, Foreign Key User, Foreign Key Car)
+        return $this->belongsToMany(Car::class, 'wishlists', 'user_id', 'car_id')->withTimestamps();
     }
 }
